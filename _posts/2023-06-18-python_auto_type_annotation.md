@@ -16,45 +16,45 @@ pin: false
 
 ## TypeAnnotaion用のコード
 - ROSの公式の[サンプルコード](http://wiki.ros.org/ja/ROS/Tutorials/WritingPublisherSubscriber%28python%29)を使用する
-- talker.py
+    - talker.py
 
-```python:talker.py
-#!/usr/bin/env python
-import rospy
-from std_msgs.msg import String
+        ```py
+        #!/usr/bin/env python
+        import rospy
+        from std_msgs.msg import String
 
-def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
-    r = rospy.Rate(10) # 10hz
-    while not rospy.is_shutdown():
-        str = "hello world %s"%rospy.get_time()
-        rospy.loginfo(str)
-        pub.publish(str)
-        r.sleep()
+        def talker():
+            pub = rospy.Publisher('chatter', String, queue_size=10)
+            rospy.init_node('talker', anonymous=True)
+            r = rospy.Rate(10) # 10hz
+            while not rospy.is_shutdown():
+                str = "hello world %s"%rospy.get_time()
+                rospy.loginfo(str)
+                pub.publish(str)
+                r.sleep()
 
-if __name__ == '__main__':
-    try:
-        talker()
-    except rospy.ROSInterruptException: pass
-```
+        if __name__ == '__main__':
+            try:
+                talker()
+            except rospy.ROSInterruptException: pass
+        ```
 
-- main.py
+    - main.py
 
-```python:main.py
-#!/usr/bin/env python
-from talker import talker
+        ```py
+        #!/usr/bin/env python
+        from talker import talker
 
-if __name__ == '__main__':
-    talker()
-```
+        if __name__ == '__main__':
+            talker()
+        ```
 
 ## 自動型アノテーションツール
 ### [MonkeyType](https://github.com/Instagram/MonkeyType)
 - Instagramが公開している静的型アノテーション生成ライブラリ
 - install MonkeyType
 
-```Bash
+```bash
 pip install MonkyType
 ```
 
@@ -62,7 +62,7 @@ pip install MonkyType
 
 - 実行
 
-``` Bash
+``` bash
 # run　でAnotationを実行
 $ monkeytype run main.py
 
@@ -93,13 +93,13 @@ def talker() -> None:
 - mypyは型チェックのライブラリ
 - install mypy
 
-```Bash
+```bash
 pip install mypy
 ```
 
 - zshの場合は次の2行を.zshrcに追加する
 
-```Bash:.zshrc
+```bash
 export PATH="$PATH:/home/sota/.local/bin"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 ```
@@ -107,7 +107,7 @@ export PATH="$PATH:/home/sota/.local/bin"
 - 実行結果
     - 事前にcatkin_wsのsetup.zshを読み込ませたが、rospyを認識できていない
 
-``` Bash
+``` bash
 $ mypy talker.py
 talker.py:3: error: Cannot find implementation or library stub for module named "rospy"
 talker.py:3: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports

@@ -115,6 +115,22 @@ talker.py:4: error: Cannot find implementation or library stub for module named 
 Found 2 errors in 1 file (checked 1 source file)
 ```
 
+- findに失敗したLibraryを無視するオプション (--ignore-missing-imports)+ all optional error checking flag(--strict)を付けて実行
+
+``` bash
+$ mypy --ignore-missing-imports --strict talker.py
+talker.py:6: error: Function is missing a return type annotation
+talker.py:6: note: Use "-> None" if function does not return a value
+Found 1 error in 1 file (checked 1 source file)
+```
+
+- Functionの返り値の型が無いというエラーがでおり、"-> None" を使えと言われているので、付けて再実行すると、型チェックをパスする
+
+```bash
+$ mypy --ignore-missing-imports --strict talker.py
+Success: no issues found in 1 source file
+```
+
 
 ### [Pyannotate](https://github.com/dropbox/pyannotate/tree/master)
 - DropBoxが公開しているPEP-484準拠の自動型アノテーションライブラリ

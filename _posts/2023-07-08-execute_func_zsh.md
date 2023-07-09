@@ -1,7 +1,7 @@
 ---
 title: zshrcに定義している関数
 date: 2023-07-08 10:00:00 +0900
-categories: [zsh]
+categories: [Zsh]
 tags: [zsh]
 pin: false
 ---

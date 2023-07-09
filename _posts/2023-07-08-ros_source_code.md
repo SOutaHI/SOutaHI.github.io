@@ -1,7 +1,7 @@
 ---
 title: ros1のソースコード
 date: 2023-07-08 10:00:00 +0900
-categories: [ros1]
+categories: [ROS1]
 tags: [ros1]
 pin: false
 ---

@@ -1,8 +1,8 @@
 ---
 title: ROS1でConsole Logを表示する際に、Node名も合わせて表示する
 date: 2023-07-08 10:00:00 +0900
-categories: [ros1]
-tags: [ros1]
+categories: [ROS1, Cpp]
+tags: [ros1, cpp]
 pin: false
 ---
 

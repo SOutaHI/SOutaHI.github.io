@@ -1,8 +1,8 @@
 ---
 title: zshでコマンド予測補完機能を有効化する
 date: 2023-07-08 10:00:00 +0900
-categories: [ros1]
-tags: [ros1]
+categories: [Zsh]
+tags: [zsh]
 pin: false
 ---
 

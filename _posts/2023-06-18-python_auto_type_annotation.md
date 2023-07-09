@@ -1,5 +1,5 @@
 ---
-title: 型アノテーションを自動化する
+title: Pythonの型アノテーションを自動化する
 date: 2023-06-18 10:00:00 +0900
 categories: [Python, AutoTypeAnnotation]
 tags: [python, auto type anotation]

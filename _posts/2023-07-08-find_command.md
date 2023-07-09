@@ -11,7 +11,7 @@ pin: false
 - zshで、コマンド予測補完系のプラグインをインストールする
 
 ## 参考
-- https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df
+- [n1snt/Oh my ZSH with zsh-autosuggestions zsh-syntax-highlighting zsh-fast-syntax-highlighting and zsh-autocomplete.md](https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df)
 
 ## 環境
 - zsh + oh-my-zsh

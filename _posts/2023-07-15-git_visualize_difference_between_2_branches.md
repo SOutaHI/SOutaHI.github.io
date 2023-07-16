@@ -26,4 +26,4 @@ pin: false
 
 - 選択すると、FILE CHANGED や、SEARCH & COMPARE が表示される
 
-![VSCode View](branch_visualization_2023_05_15.png)
+![VSCode View](/assets/img/posts/branch_visualization_2023_05_15.png)

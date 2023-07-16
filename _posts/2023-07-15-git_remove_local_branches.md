@@ -16,6 +16,9 @@ pin: false
 
 - [Git のローカルブランチの削除を簡単にした話](https://www.farend.co.jp/blog/2023/01/delete-git-local-branch/)
 - [xargs - if condition and echo {}](https://stackoverflow.com/questions/9484368/xargs-if-condition-and-echo)
+- [シェル: コマンドの実行結果を変数に入れる方法](https://armadillo.atmark-techno.com/blog/53/3081)
+- [BASHシェルスクリプトで「キー入力待ち」プロンプトを実装する](https://armadillo.atmark-techno.com/blog/53/3081)
+
 
 ## マージされたブランチを削除する
 

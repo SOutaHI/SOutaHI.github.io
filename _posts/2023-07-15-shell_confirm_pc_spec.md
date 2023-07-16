@@ -6,17 +6,15 @@ tags: [shell]
 pin: false
 ---
 
-し
-
 ## 概要
 
 - PC のスペックを確認したい時があり、コマンドをまとめておく
 
 ## 参考
 
-- [UbuntuのOSやCPU, GPUの情報を確認するコマンド](https://qiita.com/sabaku20XX/items/97db2c0bf7298e3a645c#gpu%E3%81%AE%E3%83%8F%E3%83%BC%E3%83%89%E6%83%85%E5%A0%B1)
-- [Linuxでコマンドラインからマシンスペックを確認する方法](https://qiita.com/DaisukeMiyamoto/items/98ef077ddf44b5727c29)
-- [Linuxで載ってるメモリ（DDR）の種類を調べるコマンド](https://qiita.com/aokomoriuta/items/74a807300f644d623a02)
+- [Ubuntu の OS や CPU, GPU の情報を確認するコマンド](https://qiita.com/sabaku20XX/items/97db2c0bf7298e3a645c#gpu%E3%81%AE%E3%83%8F%E3%83%BC%E3%83%89%E6%83%85%E5%A0%B1)
+- [Linux でコマンドラインからマシンスペックを確認する方法](https://qiita.com/DaisukeMiyamoto/items/98ef077ddf44b5727c29)
+- [Linux で載ってるメモリ（DDR）の種類を調べるコマンド](https://qiita.com/aokomoriuta/items/74a807300f644d623a02)
 
 ## PC スペックの確認コマンド
 
@@ -180,8 +178,7 @@ Sun Jul 16 11:54:38 2023
 
 ```
 
-
-## PCのスペックをlogファイルとして出力するスクリプト
+## PC のスペックを log ファイルとして出力するスクリプト
 
 ```bash
 #!/bin/sh

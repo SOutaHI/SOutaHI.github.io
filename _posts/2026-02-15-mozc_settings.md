@@ -1,12 +1,10 @@
 ---
-title: Ubuntu 24.04において日本語配列のレイアウトUS配列のレイアウトを切り替える 
+title: Ubuntu 24.04のキーボードレイアウトで日本語配列とUS配列を切り替える 
 date: 2026-02-15 15:45:00 +0900
 categories: [Ubuntu]
 tags: [ubuntu 24.04, mozc]
 pin: false
 ---
-
-# Ubuntu 24.04においてUS配列のキーボードから日本語入力と直接入力を切り替える 
 
 ## 環境
 | 項目 | 内容 |

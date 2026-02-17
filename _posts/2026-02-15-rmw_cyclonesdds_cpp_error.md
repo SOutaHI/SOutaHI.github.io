@@ -4,17 +4,18 @@ date: 2026-02-15 20:45:00 +0900
 categories: [ROS2]
 tags: [jazzy, rmw, cyclonedds]
 pin: false
----
+--- 
 
-# 
 
 ## 環境
+
 | 項目 | 内容 |
 |------|------|
 | CPU | 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz |
 | OS | Ubuntu 24.04.4 LTS |
 
 ## 問題
+
 - Node実行時にUDPソケットのバッファサイズの増加リクエストが失敗し、Nodeの作成に失敗してしまう。
     ```bash
     [test-node] [0] test_node: failed to increase socket receive buffer size to at least xxx bytes, current is yyy bytes
@@ -50,12 +51,11 @@ pin: false
 
 ## 詳細
 ### CycloneDDS
-- 使用しているRMWは、CycloneDDSを使用している。
-    - CycloneDDSはECLIPS Foundationが開発・公開しているDDS。
-        - 参考：https://projects.eclipse.org/projects/iot.cyclonedds
-        - ライセンスは、Eclipse Distribution License 1.0 (BSD-3-Clause)、Eclipse Public License 2.0
-        - ソースコードはGithubで公開されている。
-            - https://github.com/eclipse-cyclonedds/cyclonedds
+- CycloneDDSはECLIPS Foundationが開発・公開しているDDS。
+    - 参考：https://projects.eclipse.org/projects/iot.cyclonedds
+    - ライセンスは、Eclipse Distribution License 1.0 (BSD-3-Clause)、Eclipse Public License 2.0
+    - ソースコードはGithubで公開されている。
+        - https://github.com/eclipse-cyclonedds/cyclonedds
 
 - JazzyでCycloneDDSを使用する場合には、aptからros-jazzy-cyclone-ddsとros-jazzy-cyclonedds-cppをインストールする。
     - ros-jazzy-cyclone-dds
@@ -160,7 +160,7 @@ pin: false
               return DDS_RETCODE_ERROR;
             }
             ```
-            - getsocketoptはLinuxカーネルの関数であり、実態はnet/core/sock.cで定義されている(sk_getsockopt)[https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1725]で、そこで、sk_rcvbufから値を読み取る。
+            - getsocketoptはLinuxカーネルの関数であり、実態はnet/core/sock.cで定義されている[sk_getsockopt](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1725)で、そこで、sk_rcvbufから値を読み取る。
                 ```c
                 int sk_getsockopt(struct sock *sk, int level, int optname,
 		        sockptr_t optval, sockptr_t optlen)
@@ -172,7 +172,7 @@ pin: false
                 		v.val = READ_ONCE(sk->sk_rcvbuf);
                 		break;
                 ```
-            - sk_rcvbufはソケットの作成時の(init)[https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L3696]で設定され、system_rmem_defaultの値が設定される。
+            - sk_rcvbufはソケットの作成時の[init](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L3696)で設定され、system_rmem_defaultの値が設定される。
                 ```c
                 void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
                 {
@@ -189,7 +189,7 @@ pin: false
                 $ sysctl net.core.rmem_default
                 net.core.rmem_default = 212992
                 ```
-            - net/core/sock.c の sk_setsockoptで(__sock_set_rcvbuf)[https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1367]が呼ばれ、ソケットバッファサイズがnet.core.rmem_defaultの2倍確保される。
+            - net/core/sock.c の sk_setsockoptで[__sock_set_rcvbuf](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1367)が呼ばれ、ソケットバッファサイズがnet.core.rmem_defaultの2倍確保される。
                 - min_t(u32, val, READ_ONCE(sysctl_rmem_max))のvalにはCycloneDDSで設定されている10485760が入り、sysctl_rmem_maxの値が選択される。
                 ```c
                 int sk_setsockopt(struct sock *sk, int level, int optname,
@@ -206,6 +206,7 @@ pin: false
 	            	break;
                 ```
                 - 2倍にしている理由は、実データのメタデータ（sk_buff）が実データと同じ程度バッファを使用するためである。
+
                 ```c
                 static void __sock_set_rcvbuf(struct sock *sk, int val)
                 {
@@ -228,12 +229,13 @@ pin: false
                 	WRITE_ONCE(sk->sk_rcvbuf, max_t(int, val * 2, SOCK_MIN_RCVBUF));
                 }
                 ```
+
             - 上記により、212992の2倍の425984がactsizeに入り、actsize >= socket_req_buf_sizeにおいて、elseの分岐に入る。
                 ```c
                 /* 425984 >= 10485760となり、Falseとなる*/       
                 actsize >= socket_req_buf_size
                 ```
-- rmw_cycloneddsのREADMEでは、(通信遅延が大きい場合には、rmem_maxとrmem_defaultを大きくすることを推奨している)[https://github.com/ros2/rmw_cyclonedds?tab=readme-ov-file#performance-recommendations]。
+- rmw_cycloneddsのREADMEでは、[通信遅延が大きい場合には、rmem_maxとrmem_defaultを大きくすることを推奨している](https://github.com/ros2/rmw_cyclonedds?tab=readme-ov-file#performance-recommendations)。
     ```bash
     # Permanently Settings
     echo "net.core.rmem_max=8388608\nnet.core.rmem_default=8388608\n" | sudo tee /etc/sysctl.d/60-cyclonedds.conf

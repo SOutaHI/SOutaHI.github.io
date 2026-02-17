@@ -4,10 +4,12 @@ date: 2026-02-15 15:45:00 +0900
 categories: [Ubuntu]
 tags: [ubuntu 24.04, mozc]
 pin: false
+toc: true
 ---
 
 
 ## 環境
+
 | 項目 | 内容 |
 |------|------|
 | CPU | 11th Gen Intel(R) Core(TM) i9-11900H @ 2.50GHz |
@@ -26,6 +28,7 @@ pin: false
 2. Mozcの設定を開き、IMEのActivationとDeactivationのKeymapを変更する
     1. Desktopのヘッダーの言語マークをクリックし、Tools > Properties > General > Keymap > Customizeを選択する
     2. 次の表の用に変更する
+
         | Mode | Key | Command |
         |------|-----|---------|
         | Precomposition | {好きなKey} | Deactive IME |
@@ -131,9 +134,10 @@ pin: false
         $ setxkbmap us
         ````
 
-- 以下のようなスクリプトを用意して、aliasを登録しておくと切り替えが容易になる。
+- 以下のようなスクリプト（change_keyboard_layout.sh）を用意して、aliasを登録しておくと切り替えが容易になる。
     - キーボードレイアウト切り替えスクリプト
-        ```bash:change_keyboard_layout.sh
+
+        ```bash
         #!/bin/bash
         set -e
 
@@ -161,6 +165,7 @@ pin: false
         # confirm current layout
         check_current_layout
         ```
+
     - ~/.bashrcにaliasとして登録
         ```bash
         alias change_keyboard_layout='{スクリプトまでのPATH}/change_keyboard_layout.ch'

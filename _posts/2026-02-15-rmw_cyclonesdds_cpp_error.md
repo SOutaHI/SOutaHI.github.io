@@ -43,7 +43,7 @@ toc: true
 - OSで設定しているUDPソケットの受信バッファの最大サイズが小さい。
 
 ## 対処 
-- net.core.rmem_maxとnet.core.rmem_defaultの値をCycloneDDSの設定より大きい値に設定する。
+- `net.core.rmem_max` と `net.core.rmem_default` の値をCycloneDDSの設定より大きい値に設定する。
     ```bash
     echo "net.core.rmem_max=11534336\nnet.core.rmem_default=11534336\n" | sudo tee /etc/sysctl.d/60-cyclonedds.conf
     sudo sysctl --system
@@ -58,7 +58,7 @@ toc: true
     - ソースコードはGithubで公開されている。
         - https://github.com/eclipse-cyclonedds/cyclonedds
 
-- JazzyでCycloneDDSを使用する場合には、aptからros-jazzy-cyclone-ddsとros-jazzy-cyclonedds-cppをインストールする。
+- JazzyでCycloneDDSを使用する場合には、aptから `ros-jazzy-cyclone-dds` と `ros-jazzy-cyclonedds-cpp` をインストールする。
     - ros-jazzy-cyclone-dds
         ```bash
         $ apt info ros-jazzy-cyclonedds
@@ -91,15 +91,15 @@ toc: true
         APT-Sources: http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages
         Description: Implement the ROS middleware interface using Eclipse CycloneDDS in C++.
         ```
-- "failed to increase socket receive buffer size to at least xxx bytes, current is yyy bytes"はCycloneDDSから出力されている。
-    - src/core/ddsi/src/ddsi_udp.cの520行目において、受信バッファサイズを設定する関数（set_rcvbuf）があり、この中でデフォルトのバッファサイズを1048576としている。
+- ` failed to increase socket receive buffer size to at least xxx bytes, current is yyy bytes` はCycloneDDSから出力されている。
+    - `src/core/ddsi/src/ddsi_udp.c` の520行目において、受信バッファサイズを設定する関数（ `set_rcvbuf` ）があり、この中でデフォルトのバッファサイズを1048576としている。
         ```c
         static dds_return_t set_rcvbuf (struct ddsi_domaingv const * const gv, ddsrt_socket_t sock, const struct ddsi_config_socket_buf_size *config)
         {
           return set_socket_buffer (gv, sock, SO_RCVBUF, "SO_RCVBUF", "receive", config, 1048576);
         }
         ```
-    - set_socket_bufferはddsi_udp.cの451行目で定義されており、この関数のif (actsize >= socket_req_buf_size)のチェックで引っかかり、上記ログが出力されている。
+    - `set_socket_buffer` は `ddsi_udp.c` の451行目で定義されており、この関数の `if (actsize >= socket_req_buf_size)` のチェックで引っかかり、上記ログが出力されている。
         ```c
         if (actsize >= socket_req_buf_size)
           GVLOG (DDS_LC_CONFIG, "socket %s buffer size set to %"PRIu32" bytes\n", name, actsize);
@@ -117,15 +117,15 @@ toc: true
           rc = DDS_RETCODE_NOT_ENOUGH_SPACE;
         }
         ```
-    - このとき、actsizeには425984が値として入っており、またsocket_req_buf_sizeには10485760が入っている。
-        - socket_req_buf_sizeは、ddsi_udp.cの465行目で定義されており、バッファのMaxサイズが指定されていれば、Maxサイズを使用し、Minサイズが設定されていればMinサイズを使用する。どちらも設定されていない場合には、default_min_size(set_socket_bufferの最後の引数で、1048576が設定されている)が使用される。
+    - このとき、 `actsize` には425984が値として入っており、また `socket_req_buf_size` には10485760が入っている。
+        -  `socket_req_buf_size` は、ddsi_udp.cの465行目で定義されており、バッファのMaxサイズが指定されていれば、Maxサイズを使用し、Minサイズが設定されていればMinサイズを使用する。どちらも設定されていない場合には、`default_min_size` (set_socket_bufferの最後の引数で、1048576が設定されている)が使用される。
             ```c
             const uint32_t socket_req_buf_size = // size to request
             (!config->max.isdefault && config->max.value > socket_min_buf_size) ? config->max.value
             : !config->min.isdefault ? config->min.value
             : default_min_size;
             ```
-        - actsizeはddsrt_getsockoptで値が設定される。ddsrt_getsockoptは、/src/ddsrt/src/sockets/posix/socket.cで定義されており、中でgetsockoptを呼んでいる。
+        - `actsize` は `ddsrt_getsockopt` で値が設定される。`ddsrt_getsockopt` は、`/src/ddsrt/src/sockets/posix/socket.c` で定義されており、中で `getsockopt` を呼んでいる。
             ```c 
             dds_return_t
             ddsrt_getsockopt(
@@ -161,7 +161,7 @@ toc: true
               return DDS_RETCODE_ERROR;
             }
             ```
-            - getsocketoptはLinuxカーネルの関数であり、実態はnet/core/sock.cで定義されている[sk_getsockopt](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1725)で、そこで、sk_rcvbufから値を読み取る。
+            -  `getsocketopt` はLinuxカーネルの関数であり、実態は `net/core/sock.c` で定義されている[sk_getsockopt](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1725)で、そこで、sk_rcvbufから値を読み取る。
                 ```c
                 int sk_getsockopt(struct sock *sk, int level, int optname,
 		        sockptr_t optval, sockptr_t optlen)
@@ -173,7 +173,7 @@ toc: true
                 		v.val = READ_ONCE(sk->sk_rcvbuf);
                 		break;
                 ```
-            - sk_rcvbufはソケットの作成時の[init](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L3696)で設定され、system_rmem_defaultの値が設定される。
+            - `sk_rcvbuf` はソケットの作成時の[init](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L3696)で設定され、system_rmem_defaultの値が設定される。
                 ```c
                 void sock_init_data_uid(struct socket *sock, struct sock *sk, kuid_t uid)
                 {
@@ -185,13 +185,13 @@ toc: true
                 	sk->sk_allocation	=	GFP_KERNEL;
                 	sk->sk_rcvbuf		=	READ_ONCE(sysctl_rmem_default);
                 ```
-            - sysctl_rmem_defaultはnet.core.rmem_defaultであり、現環境では212992が設定されている
+            - `sysctl_rmem_default` は `net.core.rmem_default` であり、現環境では212992が設定されている
                 ```bash
                 $ sysctl net.core.rmem_default
                 net.core.rmem_default = 212992
                 ```
-            - net/core/sock.c の sk_setsockoptで[__sock_set_rcvbuf](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1367)が呼ばれ、ソケットバッファサイズがnet.core.rmem_defaultの2倍確保される。
-                - min_t(u32, val, READ_ONCE(sysctl_rmem_max))のvalにはCycloneDDSで設定されている10485760が入り、sysctl_rmem_maxの値が選択される。
+            - `net/core/sock.c` の `sk_setsockopt` で[__sock_set_rcvbuf](https://github.com/torvalds/linux/blob/ca4ee40bf13dbd3a4be3b40a00c33a1153d487e5/net/core/sock.c#L1367)が呼ばれ、ソケットバッファサイズが `net.core.rmem_default` の2倍確保される。
+                -  `min_t(u32, val, READ_ONCE(sysctl_rmem_max))` のvalにはCycloneDDSで設定されている10485760が入り、 `sysctl_rmem_max` の値が選択される。
                 ```c
                 int sk_setsockopt(struct sock *sk, int level, int optname,
 		        sockptr_t optval, unsigned int optlen)
@@ -206,7 +206,7 @@ toc: true
 	            	__sock_set_rcvbuf(sk, min_t(u32, val, READ_ONCE(sysctl_rmem_max)));
 	            	break;
                 ```
-                - 2倍にしている理由は、実データのメタデータ（sk_buff）が実データと同じ程度バッファを使用するためである。
+                - 2倍にしている理由は、実データのメタデータ（ `sk_buff` ）が実データと同じ程度バッファを使用するためあると記載されている。
 
                 ```c
                 static void __sock_set_rcvbuf(struct sock *sk, int val)
@@ -231,7 +231,7 @@ toc: true
                 }
                 ```
 
-            - 上記により、212992の2倍の425984がactsizeに入り、actsize >= socket_req_buf_sizeにおいて、elseの分岐に入る。
+            - 上記により、212992の2倍の425984が `actsize` に入り、`actsize >= socket_req_buf_size` において、elseの分岐に入る。
                 ```c
                 /* 425984 >= 10485760となり、Falseとなる*/       
                 actsize >= socket_req_buf_size
